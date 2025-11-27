@@ -1,0 +1,786 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>EduMentor AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      padding: 24px;
+      background: linear-gradient(180deg, #1e40af 0%, #3b82f6 100%);
+      color: white;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar h2 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      font-weight: 700;
+      animation: fadeInDown 0.5s ease;
+    }
+
+    .session-info {
+      margin-bottom: 24px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .session-info p {
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .session-info code {
+      display: block;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-size: 0.75rem;
+      word-break: break-all;
+      backdrop-filter: blur(10px);
+    }
+
+    #memory_panel {
+      animation: fadeIn 0.7s ease;
+    }
+
+    #memory_panel h3 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    #memory_list {
+      list-style: none;
+    }
+
+    #memory_list li {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      backdrop-filter: blur(10px);
+      transition: background 0.2s ease;
+    }
+
+    #memory_list li:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Hamburger Menu */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: #3b82f6;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      cursor: pointer;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .hamburger:hover {
+      background: #2563eb;
+      transform: scale(1.05);
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      background: #ffffff;
+    }
+
+    .error {
+      background: #fef2f2;
+      color: #991b1b;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border-left: 4px solid #dc2626;
+      animation: slideInDown 0.3s ease;
+    }
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .chat::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat::-webkit-scrollbar-track {
+      background: #f3f4f6;
+      border-radius: 4px;
+    }
+
+    .chat::-webkit-scrollbar-thumb {
+      background: #3b82f6;
+      border-radius: 4px;
+    }
+
+    .msg {
+      max-width: 70%;
+      animation: messageSlide 0.3s ease;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+    }
+
+    .bubble {
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: #f3f4f6;
+      color: #1f2937;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .bubble:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .msg.user .bubble {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .bubble .role {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bubble .content {
+      line-height: 1.6;
+    }
+
+    /* Markdown styling in messages */
+    .bubble .content h1,
+    .bubble .content h2,
+    .bubble .content h3 {
+      margin: 16px 0 8px 0;
+      font-weight: 700;
+    }
+
+    .bubble .content h1 { font-size: 1.5rem; }
+    .bubble .content h2 { font-size: 1.25rem; }
+    .bubble .content h3 { font-size: 1.1rem; }
+
+    .bubble .content ul,
+    .bubble .content ol {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .bubble .content li {
+      margin: 6px 0;
+      line-height: 1.5;
+    }
+
+    .bubble .content p {
+      margin: 10px 0;
+    }
+
+    .bubble .content code {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .msg.user .bubble .content code {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .bubble .content pre {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    .msg.user .bubble .content pre {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .bubble .content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .bubble .content strong {
+      font-weight: 600;
+    }
+
+    .bubble .content blockquote {
+      border-left: 3px solid #3b82f6;
+      padding-left: 12px;
+      margin: 12px 0;
+      color: #6b7280;
+    }
+
+    .sources {
+      margin-top: 12px;
+      font-size: 0.875rem;
+      padding: 12px;
+      background: #eff6ff;
+      border-radius: 8px;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .sources b {
+      color: #1e40af;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .sources ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .sources li {
+      margin-bottom: 6px;
+    }
+
+    .sources a {
+      color: #3b82f6;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .sources a:hover {
+      color: #1e40af;
+      text-decoration: underline;
+    }
+
+    /* Composer */
+    .composer {
+      display: flex;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 2px solid #f3f4f6;
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .composer input {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      background: #ffffff;
+      color: #1f2937;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .composer input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .composer button {
+      padding: 14px 28px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .composer button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    .composer button:active {
+      transform: translateY(0);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Tablet Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 260px;
+      }
+
+      .msg {
+        max-width: 80%;
+      }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 75%;
+        max-width: 280px;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+        overflow-y: auto;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .main {
+        padding: 80px 12px 12px 12px;
+        width: 100%;
+      }
+
+      .chat {
+        padding: 8px;
+        gap: 12px;
+      }
+
+      .msg {
+        max-width: 85%;
+        width: fit-content;
+      }
+
+      .bubble {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .bubble .content {
+        line-height: 1.5;
+      }
+
+      .composer {
+        padding: 12px 0;
+        gap: 8px;
+      }
+
+      .composer input {
+        padding: 12px 14px;
+        font-size: 1rem;
+      }
+
+      .composer button {
+        padding: 12px 20px;
+      }
+    }
+
+    /* Small Phone Responsive */
+    @media (max-width: 480px) {
+      .hamburger {
+        width: 44px;
+        height: 44px;
+        top: 16px;
+        left: 16px;
+      }
+
+      .hamburger span {
+        width: 22px;
+      }
+
+      .sidebar {
+        width: 80%;
+        max-width: 260px;
+        padding: 20px 16px;
+      }
+
+      .sidebar h2 {
+        font-size: 1.25rem;
+        margin-bottom: 20px;
+      }
+
+      .session-info code {
+        font-size: 0.7rem;
+        padding: 8px 10px;
+      }
+
+      #memory_list li {
+        font-size: 0.75rem;
+        padding: 8px;
+      }
+
+      .main {
+        padding: 70px 8px 8px 8px;
+      }
+
+      .chat {
+        padding: 4px;
+        gap: 10px;
+      }
+
+      .msg {
+        max-width: 90%;
+      }
+
+      .bubble {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+      }
+
+      .bubble .role {
+        font-size: 0.7rem;
+        margin-bottom: 4px;
+      }
+
+      .sources {
+        font-size: 0.8rem;
+        padding: 10px;
+        margin-top: 8px;
+      }
+
+      .sources li {
+        margin-bottom: 4px;
+      }
+
+      .composer {
+        padding: 10px 0;
+        gap: 8px;
+      }
+
+      .composer input {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+      }
+
+      .composer button {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+      }
+
+      .error {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* Extra Small Phones */
+    @media (max-width: 360px) {
+      .main {
+        padding: 65px 6px 6px 6px;
+      }
+
+      .msg {
+        max-width: 92%;
+      }
+
+      .bubble {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+
+      .composer input {
+        padding: 9px 10px;
+        font-size: 0.9rem;
+      }
+
+      .composer button {
+        padding: 9px 14px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
+      <h2>EduMentor</h2>
+      <div class="session-info">
+        <p>Session:</p>
+        <code id="session_id"></code>
+      </div>
+      <div id="memory_panel">
+        <h3>Recent Memory</h3>
+        <ul id="memory_list"></ul>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="error_box" class="error" style="display:none"></div>
+      <div class="chat" id="chat_box"></div>
+
+      <form id="chat_form" class="composer" onsubmit="return sendMessage(event)">
+        <input id="message_input" placeholder="Ask about study topics..." autocomplete="off"/>
+        <button type="submit">Send</button>
+      </form>
+    </main>
+  </div>
+
+<script>
+const sessionKey = "edu_session_id";
+let sessionId = localStorage.getItem(sessionKey) || "";
+
+document.getElementById("session_id").innerText = sessionId || "(new session)";
+
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const hamburger = document.getElementById("hamburger");
+  sidebar.classList.toggle("active");
+  hamburger.classList.toggle("active");
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+  const sidebar = document.getElementById("sidebar");
+  const hamburger = document.getElementById("hamburger");
+  const isClickInsideSidebar = sidebar.contains(event.target);
+  const isClickOnHamburger = hamburger.contains(event.target);
+  
+  if (!isClickInsideSidebar && !isClickOnHamburger && sidebar.classList.contains('active')) {
+    sidebar.classList.remove('active');
+    hamburger.classList.remove('active');
+  }
+});
+
+function showError(text){
+  const box = document.getElementById("error_box");
+  box.innerText = text;
+  box.style.display = "block";
+  setTimeout(()=> box.style.display = "none", 7000);
+}
+
+function addMessage(role, text, sources){
+  const container = document.getElementById("chat_box");
+  const div = document.createElement("div");
+  div.className = "msg " + (role === "You" ? "user" : "bot");
+  
+  // Convert markdown to HTML for bot messages
+  let contentHTML = text;
+  if (role !== "You" && typeof marked !== 'undefined') {
+    try {
+      contentHTML = marked.parse(text);
+    } catch (e) {
+      console.error("Markdown parsing error:", e);
+      contentHTML = text.replace(/\n/g, '<br>');
+    }
+  } else {
+    // For user messages or if marked is not available, just preserve line breaks
+    contentHTML = text.replace(/\n/g, '<br>');
+  }
+  
+  let inner = `<div class="bubble"><div class="role">${role}</div><div class="content">${contentHTML}</div></div>`;
+  div.innerHTML = inner;
+  
+  if(sources && sources.length){
+    const s = document.createElement("div");
+    s.className = "sources";
+    s.innerHTML = "<b>Sources:</b><ul>" + sources.map(x=>`<li><a href="${x.link}" target="_blank">${x.title}</a></li>`).join("") + "</ul>";
+    div.appendChild(s);
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage(e){
+  e.preventDefault();
+  const txt = document.getElementById("message_input").value.trim();
+  if(!txt) return false;
+  addMessage("You", txt);
+  document.getElementById("message_input").value = "";
+  addMessage("Buddy", "<i>Thinking...</i>");
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({session_id: sessionId, text: txt})
+    });
+    if(!res.ok){
+      const err = await res.text();
+      showError("Server error: " + res.status + " — check console.");
+      console.error("Server error:", err);
+      return false;
+    }
+    const data = await res.json();
+    sessionId = data.session_id;
+    localStorage.setItem(sessionKey, sessionId);
+    document.getElementById("session_id").innerText = sessionId;
+
+    // remove last "Thinking" bot message
+    const chat = document.getElementById("chat_box");
+    const last = chat.lastElementChild;
+    if(last && last.querySelector && last.querySelector(".content") && last.querySelector(".content").innerHTML.includes("Thinking")){
+      chat.removeChild(last);
+    }
+
+    if(data.reply && data.reply.startsWith("LLM Error:")){
+      showError(data.reply);
+    }
+    addMessage("Buddy", data.reply || "No reply", data.sources || []);
+    updateMemoryPanel();
+  } catch (err){
+    console.error(err);
+    showError("Network error — make sure server is running and keys are configured.");
+  }
+  return false;
+}
+
+async function updateMemoryPanel(){
+  if(!sessionId) return;
+  try {
+    const res = await fetch(`/api/history/${sessionId}`);
+    if(!res.ok) return;
+    const data = await res.json();
+    const mem = data.history.slice(-5).reverse();
+    const ul = document.getElementById("memory_list");
+    ul.innerHTML = "";
+    mem.forEach(it => {
+      const li = document.createElement("li");
+      li.innerText = `${new Date(it.time).toLocaleString()}: ${it.user.substring(0,70)} -> ${it.bot.substring(0,70)}`;
+      ul.appendChild(li);
+    });
+  } catch (e){ console.log(e); }
+}
+
+setTimeout(updateMemoryPanel, 500);
+</script>
+</body>
+</html>

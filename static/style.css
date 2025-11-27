@@ -1,0 +1,21 @@
+/* static/style.css */
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:#0b1220;color:#e6eef8}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;padding:20px;background:linear-gradient(180deg,#071133,#0b1a33);border-right:1px solid rgba(255,255,255,0.03)}
+.sidebar h2{margin:0 0 10px}
+.sidebar code{display:block;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:10px}
+.main{flex:1;display:flex;flex-direction:column;padding:20px}
+.chat{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:75%}
+.msg.user{align-self:flex-end}
+.msg.bot{align-self:flex-start}
+.bubble{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.03);color:#e6eef8}
+.msg.user .bubble{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:white}
+.composer{display:flex;gap:10px;padding-top:10px}
+.composer input{flex:1;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit}
+.composer button{padding:10px 14px;border-radius:8px;background:#06b6d4;color:#042a2b;border:none;font-weight:600}
+.sources{margin-top:8px;font-size:0.9rem;color:#bcd9ff}
+.sources a{color:#aee1ff;text-decoration:none}
+.error{background:#ffefef;color:#9b1b1b;padding:8px;border-radius:6px;margin-bottom:10px}
+@media(max-width:800px){.sidebar{display:none}.msg{max-width:95%}}

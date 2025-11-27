@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+jinja2
+requests
+google-api-python-client
+prometheus-client
+python-dotenv
+openai
+google-generativeai
