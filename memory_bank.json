@@ -344,6 +344,58 @@
         "user": "hello",
         "bot": "Hello there! I'm EduMentor, your AI study assistant. I'm here to help you with any questions you have or topics you'd like to explore.\n\nHow can I assist you with your studies today?\n\n### Summary\n\nI have introduced myself and am ready to assist you with your studies.\n\n### Helpful Sources\n\nNo sources available.\n",
         "sources": []
+      },
+      {
+        "time": "2025-11-30T19:37:07.439660",
+        "user": "take a quiz on python programming for class 12",
+        "bot": "LLM Error: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Your API key was reported as leaked. Please use another API key.', 'status': 'PERMISSION_DENIED'}}",
+        "sources": [
+          {
+            "title": "Python Quiz",
+            "link": "https://www.w3schools.com/python/python_quiz.asp",
+            "snippet": "If you don't know Python, we suggest that you read our Python Tutorial from scratch. Kickstart your career. Get certified by completing the PYTHON course. Get ..."
+          },
+          {
+            "title": "The Joel Test: 12 Steps to Better Code – Joel on Software",
+            "link": "https://www.joelonsoftware.com/2000/08/09/the-joel-test-12-steps-to-better-code/",
+            "snippet": "Aug 9, 2000 ... With all the time you save, you can go to medical school. The Joel Test. Do you use source control? Can you make a build in one step? Do you ..."
+          },
+          {
+            "title": "CS 519 - Scientific Visualization | uiucmcs.org",
+            "link": "https://uiucmcs.org/courses/CS-519-Scientific-Visualization",
+            "snippet": "... taking it. The course had 3 components involved in the final grade: Weekly Quizzes, Programming Assignments, and 2 Exams. I'll talk about each of those ..."
+          }
+        ]
+      },
+      {
+        "time": "2025-11-30T19:37:19.687735",
+        "user": "hello",
+        "bot": "LLM Error: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Your API key was reported as leaked. Please use another API key.', 'status': 'PERMISSION_DENIED'}}",
+        "sources": []
+      },
+      {
+        "time": "2025-11-30T19:41:50.626329",
+        "user": "hello",
+        "bot": "LLM Error: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}",
+        "sources": []
+      },
+      {
+        "time": "2025-11-30T19:46:51.259260",
+        "user": "hello",
+        "bot": "LLM Error: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}",
+        "sources": []
+      },
+      {
+        "time": "2025-11-30T19:54:09.345606",
+        "user": "hello",
+        "bot": "LLM Error: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}",
+        "sources": []
+      },
+      {
+        "time": "2025-11-30T19:54:42.830046",
+        "user": "hello",
+        "bot": "LLM Error: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}",
+        "sources": []
       }
     ]
   }
